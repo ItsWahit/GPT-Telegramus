@@ -1,20 +1,25 @@
 # 🤖 GPT-Telegramus
-### The best Telegram bot for ChatGPT, EdgeGPT (aka Bing AI), DALL-E, Bing Image generator and Bard with stream writing, requests with images (for Bard only), multiple languages, admin control, automatic proxy searcher, data logging and more!
+
+| <img src="Logo.png" alt="GPT-Telegramus logo"/> | <h3>The best Telegram bot for ChatGPT, EdgeGPT (aka Bing AI), DALL-E, Bing Image generator, Bard and Gemini with stream writing, requests with images (for Bard and Gemini only), multiple languages, admin control, automatic proxy searcher, data logging and more!</h3> |
+|-------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+
 <div style="width:100%;text-align:center;">
-   <p align="center">
-      <img src="https://badges.frapsoft.com/os/v1/open-source.png?v=103" >
-   </p>
+    <p align="center">
+        <img src="https://badges.frapsoft.com/os/v1/open-source.png?v=103" >
+    </p>
 </div>
 <div style="width:100%;text-align:center;">
-   <p align="center">
-      <a href="https://www.youtube.com/@F3RNI"><img alt="YouTube" src="https://img.shields.io/badge/-YouTube-red" ></a>
-      <a href="https://f3rni.bandcamp.com"><img alt="Bandcamp" src="https://img.shields.io/badge/-Bandcamp-cyan" ></a>
-      <a href="https://open.spotify.com/artist/22PQ62alehywlYiksbtzsm"><img alt="Spotify" src="https://img.shields.io/badge/-Spotify-green" ></a>
-      <a href="https://soundcloud.com/f3rni"><img alt="SoundCloud" src="https://img.shields.io/badge/-SoundCloud-orange" ></a>
-   </p>
+    <p align="center">
+        <a href="https://www.youtube.com/@F3RNI"><img alt="YouTube" src="https://img.shields.io/badge/-YouTube-red" ></a>
+        <a href="https://f3rni.bandcamp.com"><img alt="Bandcamp" src="https://img.shields.io/badge/-Bandcamp-cyan" ></a>
+        <a href="https://open.spotify.com/artist/22PQ62alehywlYiksbtzsm"><img alt="Spotify" src="https://img.shields.io/badge/-Spotify-green" ></a>
+        <a href="https://soundcloud.com/f3rni"><img alt="SoundCloud" src="https://img.shields.io/badge/-SoundCloud-orange" ></a>
+    </p>
 </div>
 
-![](Banner.png)
+
+
+![]( Banner.png)
 
 ----------
 
@@ -33,45 +38,61 @@ Or message me if you would like to donate 💰
 
 ## 🤗 Contributors
 
-- 1️⃣ [Sprav04ka](https://github.com/Sprav04ka) - *Tofii'skovyi' language, Testing, Super beautiful DIY jack o'lantern (for poster), Motivation*
-- 2️⃣ [Sergey Krashevich](https://github.com/skrashevich) - *Docker, GitHub Actions*
-- 3️⃣ [Wahit Fitriyanto](https://github.com/wahitftry) - *Indonesian language*
-- 4️⃣ [Alexander Fadeyev](https://github.com/alfsoft) - *EdgeGPT Fix*
+- 1️⃣ [Sprav04ka](https://github.com/Sprav04ka) - *Tofii'skovyi' language, Testing, Super beautiful poster, Project Logo, Motivation*
+- 2️⃣ [Hanssen](https://github.com/handsome0hell) - *Markdown parsing, bard images, /chat command, caption fix, loading emoji, dynamic splitting, code block splitting, Gemini module, Docker fix, GitHub actions fix* **and much much more**
+- 3️⃣ [Sergey Krashevich](https://github.com/skrashevich) - *Docker, GitHub Actions*
+- 4️⃣ [Wahit Fitriyanto](https://github.com/wahitftry) - *Indonesian language*
+- 5️⃣ [Alexander Fadeyev](https://github.com/alfsoft) - *EdgeGPT Fix*
 
 ----------
 
-## 📙 Dependencies
+## 🏗️ Requirements
+
+- Python 3.10
+- GO lang (for ChatGPTProxy)
+- Unblocked access to the telegram bot official API
+- Other requirements specified in the `requirements.txt` file
+
+----------
+
+## 📙 Project based on
 
 - **ChatGPT** (ChatGPT by OpenAI): https://chat.openai.com/chat
 - **Bing chat** (EdgeGPT by Microsoft): https://bing.com/chat
 - **DALL-E** (DALLE by OpenAI): https://openai.com/dall-e-2/
 - **Bard** (Bard by Google): https://bard.google.com/
+- **Gemini** (Gemini by Google): https://makersuite.google.com/app/prompts/new_freeform
 - **acheong08/ChatGPT** (API): https://github.com/acheong08/ChatGPT
 - **acheong08/EdgeGPT** (API): https://github.com/acheong08/EdgeGPT
 - **jacobgelling/EdgeGPT** (API): https://github.com/jacobgelling/EdgeGPT
 - **dsdanielpark/Bard-API** (API): https://github.com/dsdanielpark/Bard-API
 - **acheong08/BingImageCreator** (API): https://github.com/acheong08/BingImageCreator
+- **google/generative-ai-python** (API): https://github.com/google/generative-ai-python
 - **python-telegram-bot** (Telegram bot API): https://github.com/python-telegram-bot/python-telegram-bot
 
 ----------
 
 ## ❓ Get started
 
-1. Install Python and pip
+1. Install Python 3.10, `venv` and `pip`
 2. Download source code
-3. Install requirements `pip install -r requirements.txt --upgrade`
-4. Access the modules you want to use (Generate an API key to ChatGPT / DALL-E, save cookies for EdgeGPT / Bard)
-5. Carefully change all the settings (in the `config.json` file) to suit your needs. If you have questions regarding any setting, open an issue, I will add a more detailed description
-6. Create bot at https://t.me/BotFather
-7. Type Bot's token into `api_key` in `telegram` in `config.json` file
-8. Run main script `python main.py`
+3. Create venv `python -m venv venv` / `python3 -m venv venv` / `python3.10 -m venv venv`
+4. Activate venv `source venv/bin/activate` / `venv\Scripts\activate.bat`
+5. Check python version using `python --version` command. It should be 3.10.X
+6. Install requirements `pip install -r requirements.txt --upgrade`
+7. Access the modules you want to use (Generate an API key / access token for ChatGPT / DALL-E / Gemini, save cookies for EdgeGPT / Bard)
+8. Start ChatGPTProxy for ChatGPT (see **🔗 Chat-GPT Base URL (proxy)** section)
+9. Carefully change all the settings (in the `config.json` file) to suit your needs. If you have questions regarding any setting, open an issue, I will add a more detailed description
+10. Create bot at https://t.me/BotFather
+11. Type Bot's token into `api_key` in `telegram` in `config.json` file
+12. Run main script `python main.py`
 
 - **ChatGPT**
   - Browser-like Chat-GPT. Currently, without extensions and image requests (text only) (because I don't have a paid account to test it)
   - Stream response support
   - Chat history support
   - Works better with API type 1 and an access_token for authentication
-  - Note: Please refer to the `🔗 Chat-GPT Base URL (proxy)` section for correct usage.
+  - **Note**: Please refer to the `🔗 Chat-GPT Base URL (proxy)` section for correct usage.
 - **DALL·E**
   - Image generation tool from OpenAI
   - Requires an OpenAI account with unexpired credits
@@ -79,17 +100,21 @@ Or message me if you would like to donate 💰
   - Supports conversation style `/style`
   - Stream response support
   - Chat history support
-  - Web-browsing and sources support
+  - Web-browsing (probably) and sources support
   - Unfortunately, it can't accept images as input yet, nor can it generate them. Please use Bing ImageGen to generate images.
 - **Bing ImageGen**
   - Bing Image Generator. Used as a separate module due to issues with the EdgeGPT module
   - Free and unlimited
 - **Bard**
   - Google's Bard AI
-  - Stream response support
   - Chat history support
-  - Web-browsing support
+  - Web-browsing support (probably)
   - Now supports requests with images (you can send an image with text to it) **NEW**
+- **Gemini**
+  - Google's AI using the Gemini Pro model
+  - Chat history support
+  - Requests with images (you can send an image with text to it)
+  - Requests with images will not be recorded in the chat history since Google hasn't support this
 
 ----------
 
@@ -106,6 +131,7 @@ Or message me if you would like to donate 💰
 - 🇷🇺 Русский
 - ‍☠️ Тофийсковый
 - 🇮🇩 Bahasa Indonesia
+- 🇨🇳 简体中文
 
 If you want to add a language, create a pull request 💜
 
@@ -113,14 +139,16 @@ If you want to add a language, create a pull request 💜
 
 ## 🐧 Running as service on linux
 
-1. Install Python and pip
-2. Clone repo
+1. Install Python 3.10, `venv` and `pip`
+2. Download source code
+3. Create venv `python -m venv venv` / `python3 -m venv venv` / `python3.10 -m venv venv`
+4. Clone repo
    1. `git clone https://github.com/F33RNI/GPT-Telegramus/`
    2. `cd GPT-Telegramus`
-3. Edit `config.json`
-4. Install systemd
+5. Edit `config.json`
+6. Install systemd
    1. `sudo apt-get install -y systemd`
-5. Create new service file
+7. Create new service file
    1. `sudo nano /etc/systemd/system/gpt-telegramus.service`
       ```
       [Unit]
@@ -129,26 +157,75 @@ If you want to add a language, create a pull request 💜
       
       [Service]
       Type=simple
-      Restart=always
+      Restart=on-failure
+      RestartSec=5
+      
       WorkingDirectory=YOUR DIRECTORY HERE/GPT-Telegramus
       ExecStart=YOUR DIRECTORY HERE/GPT-Telegramus/run.sh
-      RestartSec=5
       
       [Install]
       WantedBy=multi-user.target
       
       ```
-6. Reload systemctl daemon
+8. Reload systemctl daemon
    1. `sudo systemctl daemon-reload`
-7. Enable and start service
-   1. `sudo systemctl enable gpt-telegramus.service`
-   2. `sudo systemctl start gpt-telegramus.service`
+9. Enable and start service
+   1. `sudo systemctl enable gpt-telegramus`
+   2. `sudo systemctl start gpt-telegramus`
+10. Note: Please use `sudo systemctl kill gpt-telegramus` and then `sudo systemctl stop gpt-telegramus` if only `sudo systemctl stop gpt-telegramus` not working
 
 ----------
+
+## 🍓 Running on Raspberry Pi (ARM)
+
+1. Install Python 3.10 if not installed
+   1. ```
+      sudo apt-get update
+      sudo apt-get install -y build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev
+      wget https://www.python.org/ftp/python/3.10.13/Python-3.10.13.tgz
+      sudo tar zxf Python-3.10.13.tgz
+      cd Python-3.10.13
+      sudo ./configure --enable-optimizations
+      sudo make -j 4
+      sudo make altinstall
+      ```
+   2. Check version by typing `python3.10 -V`. After this, you should use `python3.10` command instead of `python` or you can add it to the `bashrc` by typing `echo "alias python=/usr/local/bin/python3.10" >> ~/.bashrc`
+2. For ChatGPTProxy, install GO and tls-client
+   1. ```
+      sudo apt-get install golang-go
+      
+      git clone https://github.com/bogdanfinn/tls-client.git
+      cd tls-client/cffi_dist
+      sudo GOOS=linux CGO_ENABLED=1 GOARCH=arm64 CC="gcc" /usr/local/go/bin/go build -buildmode=c-shared -o tls-client-arm64.so
+      mv ./dist/tls-client-arm64.so /home/pi/.local/lib/python3.10/site-packages/tls_client/dependencies/
+      mv ./dist/tls-client-arm64.h /home/pi/.local/lib/python3.10/site-packages/tls_client/dependencies/
+      ```
+3. Build ChatGPTProxy
+   1. ```
+      git clone https://github.com/acheong08/ChatGPTProxy
+      /usr/local/go/bin/go build
+      ```
+   2. Create and start service as mention in the **🔗 Chat-GPT Base URL (proxy)** section
+4. Follow the **🐧 Running as service on linux** guide
 
 ## 🐋 Running in Docker
 
 **WARNING: not tested**
+
+### From GitHub Package
+
+1. Clone repo or download [`config.json`](./config.json) and [`messages.json`](./messages.json)
+2. Edit the `config.json`, set options in the `files` section to the path in the container (`/app/config/<FILE_NAME>`)
+3. Run the container
+   ```shell
+   docker run -d -e TELEGRAMUS_CONFIG_FILE="/app/config/config.json" -v <YOUR_CONFIG_FOLDER>:/app/config --name gpt-telegramus --restart on-failure ghcr.io/f33rni/gpt-telegramus:latest
+   ```
+   If you want to try the preview version
+   ```shell
+   docker run -d -e TELEGRAMUS_CONFIG_FILE="/app/config/config.json" -v <YOUR_CONFIG_FOLDER>:/app/config --name gpt-telegramus --restart on-failure ghcr.io/f33rni/gpt-telegramus:edge
+   ```
+
+### Build Manually
 
 1. Install Docker
 2. Clone repo
@@ -160,11 +237,10 @@ If you want to add a language, create a pull request 💜
     ```shell
     docker run -d --name gpt-telegramus --restart on-failure telegramus
     ```
-
-**Note:** You can specify settings and messages files and chats folder location. (default location is in project folder):
-```shell
-docker run -d -e TELEGRAMUS_SETTINGS_FILE="PATH_TO_config.json" --name gpt-telegramus --restart on-failure telegramus
-```
+   or if you want to use a custom config
+   ```shell
+   docker run -d -e TELEGRAMUS_CONFIG_FILE="/app/config/config.json" -v <YOUR_CONFIG_FOLDER>:/app/config --name gpt-telegramus --restart on-failure telegramus
+   ```
 
 ----------
 
@@ -176,7 +252,7 @@ Default base URL by acheong08/ChatGPT stopped working. Below is an instruction o
    1. `sudo apt-get update`
    2. `sudo apt-get install golang-go`
 2. Clone acheong08/ChatGPTProxy repo
-   1. `git clone https://github.com/acheong08/ChatGPTProxy/tree/main`
+   1. `git clone https://github.com/acheong08/ChatGPTProxy`
    2. `cd ChatGPTProxy`
 3. Build it
    1. `go build`
@@ -191,7 +267,8 @@ Default base URL by acheong08/ChatGPT stopped working. Below is an instruction o
       
       [Service]
       Type=simple
-      Restart=always
+      Restart=on-failure
+      RestartSec=5
       
       # Proxy (if needed, or remove this and next line)
       Environment="http_proxy=http://USERNAME:PASSWORD@IP:PORT"
@@ -202,7 +279,6 @@ Default base URL by acheong08/ChatGPT stopped working. Below is an instruction o
       
       WorkingDirectory=PATH_TO_ChatGPTProxy_DIRECTORY
       ExecStart=PATH_TO_ChatGPTProxy_DIRECTORY/ChatGPTProxy
-      RestartSec=5
       
       [Install]
       WantedBy=multi-user.target
@@ -211,10 +287,10 @@ Default base URL by acheong08/ChatGPT stopped working. Below is an instruction o
 6. Reload systemctl daemon
    1. `sudo systemctl daemon-reload`
 7. Enable and start service
-   1. `sudo systemctl enable chatgpt-proxy.service`
-   2. `sudo systemctl start chatgpt-proxy.service`
+   1. `sudo systemctl enable chatgpt-proxy`
+   2. `sudo systemctl start chatgpt-proxy`
 8. See logs to make sure it's running and see current port
-   1. `systemctl status chatgpt-proxy.service`
+   1. `systemctl status chatgpt-proxy`
 9. Add it's IP to `config.json`
    1. ex. `"base_url": "http://127.0.0.0:9090/api/",`
 
@@ -222,7 +298,9 @@ Default base URL by acheong08/ChatGPT stopped working. Below is an instruction o
 
 ## 🌎 Proxy to bypass geo-blocking
 
-### NOT TESTED
+### NOT TESTED AND MOST LIKELY WILL NOT WORK
+
+**I won't respond to the issue if it's related to auto proxy**
 
 It is possible to bypass geo-blocking of ChatGPT, EdgeGPT, DALL-E or Bard. GPT-Telegramus includes automatic proxy-list downloading with periodic checks
 
@@ -245,6 +323,15 @@ Sometimes, searching for a proxy can take a long time. If you think that the fou
 - 🧹 `/clear` - Clear chat history
 - 🌎 `/lang` - Change the language
 - 🆔 `/chatid` - Show your chat_id
+- `/style` - Bing AI conversation style
+- `/chat <Text request>` - Request to the default module
+- `/chatgpt <Text request>` - Request to the ChatGPT module
+- `/dalle <Text request>` - Request to the DALL-E module
+- `/bing <Text request>` - Request to the Bing AI module
+- `/bingigen <Text request>` - Request to the Bing Image Generator
+- `/bard <Text request>` - Request to the Bard module
+- `/gemini <Text request>` - Request to the Gemini module
+
 
 ### Admin commands:
 - 💬 `/queue` - Show requests queue
@@ -266,7 +353,7 @@ GPT-Telegramus saves chat history for some modules locally (`"conversations_dir"
 
 GPT-Telegramus has a built-in data collecting function (request and response)
 
-- **For ChatGPT, EdgeGPT (aka Bing AI) and Bard** response is saved as plain text and Base64-encoded images
+- **For ChatGPT, EdgeGPT (aka Bing AI), Bard and Gemini** response is saved as plain text and Base64-encoded images
 - **For DALL-E and Bing Image generator** response is saved as Base64-encoded image (in the same text file)
 
 You can enable and configure data collection in config in `data_collecting` block
@@ -279,16 +366,17 @@ You can enable and configure data collection in config in `data_collecting` bloc
 
 - Add some free GPT-4 model
 - Add image input and generation for EdgeGPT (and ChatGPT?)
-- Add list of commands
+- Add Bard's text-to-speech
+- Add an API, so you can use GPT-Telegramus from outside the bot
 
 ----------
 
 ## ✨ Contribution
 
-- Anyone can contribute! Just create a pull request
+- Anyone can contribute! Just create a **pull request**
 
 ----------
 
 ### 🚧 P.S. This project is still under development!
 
-- If you find a bug, please create an Issue
+- If you find a **bug** in GPT-Telegramus, please create an Issue

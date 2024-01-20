@@ -127,10 +127,6 @@ class BardModule:
             response_id = UsersHandler.get_key_or_none(request_response.user, "bard_response_id")
             choice_id = UsersHandler.get_key_or_none(request_response.user, "bard_choice_id")
 
-            # Increment requests_total for statistics
-            request_response.user["requests_total"] += 1
-            self.users_handler.save_user(request_response.user)
-
             # Try to load conversation
             if conversation_id and response_id and choice_id:
                 logging.info("Using conversation_id: {}, response_id: {} and choice_id: {}".format(conversation_id,
@@ -158,6 +154,8 @@ class BardModule:
             logging.info("Response successfully processed for user {0} ({1})"
                          .format(request_response.user["user_name"], request_response.user["user_id"]))
             request_response.response = bard_response["content"]
+            if "images" in bard_response and len(bard_response["images"]) > 0:
+                request_response.response_images = bard_response["images"]
 
             # Save conversation
             logging.info("Saving conversation_id as {} and response_id as {} and choice_id as {}".

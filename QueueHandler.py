@@ -37,6 +37,9 @@ import ProxyAutomation
 import RequestResponseContainer
 import UsersHandler
 
+# After how long (seconds) clear self.prevent_shutdown_flag
+CLEAR_PREVENT_SHUTDOWN_FLAG_AFTER = 5.
+
 
 def get_container_from_queue(request_response_queue: multiprocessing.Queue, lock: multiprocessing.Lock,
                              container_id: int) -> RequestResponseContainer.RequestResponseContainer | None:
@@ -243,7 +246,7 @@ def _request_processor(config: dict,
                        lock: multiprocessing.Lock,
                        request_id: int,
                        proxy: str,
-                       chatgpt_module, dalle_module, bard_module, edgegpt_module, bing_image_gen_module) -> None:
+                       chatgpt_module, dalle_module, bard_module, edgegpt_module, bing_image_gen_module, gemini_module) -> None:
     """
     Processes request to any module
     This method should be called from multiprocessing as process
@@ -261,6 +264,10 @@ def _request_processor(config: dict,
         return
 
     try:
+        request_.response = "⌛️"
+        BotHandler.async_helper(BotHandler.send_message_async(config, messages, request_, end=False))
+        request_.response = ""
+
         # Set active state
         request_.processing_state = RequestResponseContainer.PROCESSING_STATE_ACTIVE
 
@@ -372,6 +379,25 @@ def _request_processor(config: dict,
                 bing_image_gen_module.initialize(proxy_)
                 bing_image_gen_module.process_request(request_)
 
+        # Gemini
+        elif request_.request_type == RequestResponseContainer.REQUEST_TYPE_GEMINI:
+            gemini_user_last_request_timestamp \
+                = UsersHandler.get_key_or_none(request_.user, "timestamp_gemini", 0)
+            time_passed_seconds = int(time.time()) - gemini_user_last_request_timestamp
+            if time_passed_seconds < config["gemini"]["user_cooldown_seconds"]:
+                request_.error = True
+                logging.warning("User {0} sends Gemini requests too quickly!".format(request_.user["user_id"]))
+                _user_module_cooldown(config, messages, request_,
+                                      config["gemini"]["user_cooldown_seconds"] - time_passed_seconds)
+            else:
+                request_.user["timestamp_gemini"] = int(time.time())
+                users_handler.save_user(request_.user)
+                proxy_ = None
+                if proxy and config["gemini"]["proxy"] == "auto":
+                    proxy_ = proxy
+                gemini_module.initialize(proxy_)
+                gemini_module.process_request(request_)
+
         # Wrong API type
         else:
             raise Exception("Wrong request type: {0}".format(request_.request_type))
@@ -397,7 +423,7 @@ class QueueHandler:
                  logging_queue: multiprocessing.Queue,
                  users_handler: UsersHandler,
                  proxy_automation: ProxyAutomation.ProxyAutomation,
-                 chatgpt_module, dalle_module, bard_module, edgegpt_module, bing_image_gen_module):
+                 chatgpt_module, dalle_module, bard_module, edgegpt_module, bing_image_gen_module, gemini_module):
         self.config = config
         self.messages = messages
         self.logging_queue = logging_queue
@@ -410,10 +436,15 @@ class QueueHandler:
         self.dalle_module = dalle_module
         self.bard_module = bard_module
         self.edgegpt_module = edgegpt_module
+        self.gemini_module = gemini_module
 
         # Requests queue
         self.request_response_queue = multiprocessing.Queue(maxsize=-1)
         self.lock = multiprocessing.Lock()
+
+        # Prevent bot shutdown in case of event loop close after process.kill()
+        self.prevent_shutdown_flag = False
+        self._prevent_shutdown_flag_clear_timer = 0
 
         self._exit_flag = False
         self._processing_loop_thread = None
@@ -447,6 +478,14 @@ class QueueHandler:
         self._exit_flag = False
         while not self._exit_flag:
             try:
+                # Clear prevent shutdown flag
+                if self._prevent_shutdown_flag_clear_timer > 0 and \
+                        time.time() - self._prevent_shutdown_flag_clear_timer > CLEAR_PREVENT_SHUTDOWN_FLAG_AFTER and \
+                        self.prevent_shutdown_flag:
+                    logging.info("Clearing prevent_shutdown_flag")
+                    self.prevent_shutdown_flag = False
+                    self._prevent_shutdown_flag_clear_timer = 0
+
                 # Skip one cycle in queue is empty
                 if self.request_response_queue.qsize() == 0:
                     time.sleep(0.1)
@@ -497,7 +536,8 @@ class QueueHandler:
                                                                             self.dalle_module,
                                                                             self.bard_module,
                                                                             self.edgegpt_module,
-                                                                            self.bing_image_gen_module,))
+                                                                            self.bing_image_gen_module,
+                                                                            self.gemini_module))
 
                             # Start process
                             request_process.start()
@@ -522,6 +562,8 @@ class QueueHandler:
                             timeout_seconds = self.config["bard"]["timeout_seconds"]
                         elif request_.request_type == RequestResponseContainer.REQUEST_TYPE_BING_IMAGEGEN:
                             timeout_seconds = self.config["bing_imagegen"]["timeout_seconds"]
+                        elif request_.request_type == RequestResponseContainer.REQUEST_TYPE_GEMINI:
+                            timeout_seconds = self.config["gemini"]["timeout_seconds"]
 
                         # Check timeout
                         if time.time() - request_.processing_start_timestamp > timeout_seconds:
@@ -556,19 +598,28 @@ class QueueHandler:
                             logging.info("Canceling EdgeGPT module")
                             self.edgegpt_module.cancel_requested.value = True
 
+                        # Request EdgeGPT module exit
+                        if request_.request_type == RequestResponseContainer.REQUEST_TYPE_GEMINI:
+                            logging.info("Canceling Gemini module")
+                            self.gemini_module.cancel_requested.value = True
+
                         # Set canceling flag
                         request_.processing_state = RequestResponseContainer.PROCESSING_STATE_CANCELING
 
                         # Update
                         put_container_to_queue(self.request_response_queue, None, request_)
 
-                    # Done processing / Timed out -> log data and finally remove it
+                    # Done processing / Timed out / abort requested -> log data and finally remove it
                     if request_.processing_state == RequestResponseContainer.PROCESSING_STATE_DONE \
-                            or request_.processing_state == RequestResponseContainer.PROCESSING_STATE_TIMED_OUT:
+                            or request_.processing_state == RequestResponseContainer.PROCESSING_STATE_TIMED_OUT \
+                            or request_.processing_state == RequestResponseContainer.PROCESSING_STATE_ABORT:
                         # Kill process if it is active
                         if request_.pid > 0 and psutil.pid_exists(request_.pid):
                             logging.info("Trying to kill process with PID {}".format(request_.pid))
                             try:
+                                logging.info("Setting prevent_shutdown_flag")
+                                self.prevent_shutdown_flag = True
+                                self._prevent_shutdown_flag_clear_timer = time.time()
                                 process = psutil.Process(request_.pid)
                                 process.terminate()
                                 process.kill()
@@ -614,7 +665,6 @@ class QueueHandler:
                             logging.info("Trying to kill process with PID {}".format(container.pid))
                             try:
                                 process = psutil.Process(container.pid)
-                                process.terminate()
                                 process.kill()
                                 process.wait(timeout=5)
                             except Exception as e:
@@ -667,7 +717,7 @@ class QueueHandler:
                 request_str_to_format = self.config["data_collecting"]["request_format"].replace("\\n", "\n") \
                     .replace("\\t", "\t").replace("\\r", "\r")
 
-                # Log image
+                # Log image request
                 try:
                     if request_response.image_url:
                         logging.info("Downloading user image")
@@ -694,34 +744,45 @@ class QueueHandler:
 
             # Log response
             else:
-                response = "None"
-                try:
-                    # DALL-E or BingImageGen response without error
-                    if (request_response.request_type == RequestResponseContainer.REQUEST_TYPE_DALLE
-                        or request_response.request_type == RequestResponseContainer.REQUEST_TYPE_BING_IMAGEGEN) \
-                            and not request_response.error:
-                        response_url = request_response.response if type(request_response.response) == str\
-                            else request_response.response[0]
-                        response = base64.b64encode(requests.get(response_url, timeout=120).content) \
-                            .decode("utf-8")
-
-                    # Text response (ChatGPT, EdgeGPT, Bard)
-                    else:
-                        response = request_response.response
-                except Exception as e:
-                    logging.warning("Can't parse response for data logging!", exc_info=e)
-                    response = str(response)
-
-                # Log response
+                # Get formatter
                 response_str_to_format = self.config["data_collecting"]["response_format"].replace("\\n", "\n") \
                     .replace("\\t", "\t").replace("\\r", "\r")
-                log_file.write(response_str_to_format.format(request_response.response_timestamp,
-                                                             request_response.id,
-                                                             request_response.user["user_name"],
-                                                             request_response.user["user_id"],
-                                                             RequestResponseContainer
-                                                             .REQUEST_NAMES[request_response.request_type],
-                                                             response))
+
+                # Text
+                if request_response.response and type(request_response.response) == str:
+                    log_file.write(response_str_to_format.format(request_response.response_timestamp,
+                                                                 request_response.id,
+                                                                 request_response.user["user_name"],
+                                                                 request_response.user["user_id"],
+                                                                 RequestResponseContainer
+                                                                 .REQUEST_NAMES[request_response.request_type],
+                                                                 request_response.response))
+
+                # Images
+                for image_url in request_response.response_images:
+                    try:
+                        response = base64.b64encode(requests.get(image_url, timeout=120).content).decode("utf-8")
+                        log_file.write(response_str_to_format.format(request_response.response_timestamp,
+                                                                     request_response.id,
+                                                                     request_response.user["user_name"],
+                                                                     request_response.user["user_id"],
+                                                                     RequestResponseContainer
+                                                                     .REQUEST_NAMES[request_response.request_type],
+                                                                     response))
+                    # Error logging image
+                    except Exception as e:
+                        logging.warning("Error logging image: {}".format(image_url), exc_info=e)
+
+                if request_response.response and type(request_response.response) == str:
+                    response_str_to_format = self.config["data_collecting"]["response_format"].replace("\\n", "\n") \
+                        .replace("\\t", "\t").replace("\\r", "\r")
+                    log_file.write(response_str_to_format.format(request_response.response_timestamp,
+                                                                 request_response.id,
+                                                                 request_response.user["user_name"],
+                                                                 request_response.user["user_id"],
+                                                                 RequestResponseContainer
+                                                                 .REQUEST_NAMES[request_response.request_type],
+                                                                 request_response.response))
 
             # Log confirmation
             logging.info("The {0} were written to the file: {1}".format("request" if log_request else "response",
